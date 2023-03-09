@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LoginComponent } from './login.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @NgModule({
   imports: [
@@ -13,7 +14,7 @@ import { LoginComponent } from './login.component';
     CommonModule,
   ],
   declarations: [LoginComponent],
-  providers: [],
+  providers: [MatSnackBar],
   exports: [LoginComponent],
 })
 export class LoginComponentModule {}

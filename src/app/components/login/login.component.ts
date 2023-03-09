@@ -8,6 +8,7 @@ import {
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -25,11 +26,13 @@ export class LoginComponent {
   constructor(
     private _authService: AuthService,
     private _router: Router,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private _snackBar: MatSnackBar
   ) {}
 
   onLoginFormSubmitted(loginForm: FormGroup): void {
-    if (loginForm.invalid) {
+    if (!this.loginForm.valid) {
+      this._snackBar.open('Form is invalid', 'Close');
       return;
     }
     const email: string = loginForm.get('email')?.value;
@@ -42,6 +45,7 @@ export class LoginComponent {
         this.loginForm.setErrors({
           beValidators: error.error.message,
         });
+        this._snackBar.open('Something went wrong', 'Close');
         this.cd.markForCheck();
       },
     });
