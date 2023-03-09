@@ -39,7 +39,7 @@ export class LoginComponent {
     const password: string = loginForm.get('password')?.value;
     this._authService.login({ email: email, password: password }).subscribe({
       next: () => {
-        this._router.navigate(['/login']);
+        this._router.navigate(['/leads']);
       },
       error: (error: HttpErrorResponse) => {
         this.loginForm.setErrors({
