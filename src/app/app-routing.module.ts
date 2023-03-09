@@ -9,6 +9,8 @@ import { RegisterComponentModule } from './components/register/register.componen
 import { VerifyComponentModule } from './components/verify/verify.component-module';
 import { LeadsComponent } from './components/leads/leads.component';
 import { EmailVerifiedGuard } from './guards/email-verified/email-verified.guard';
+import { CompleteProfileComponent } from './components/complete-profile/complete-profile.component';
+import { CompleteProfileComponentModule } from './components/complete-profile/complete-profile.component-module';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,6 +22,7 @@ const routes: Routes = [
     canActivate: [EmailVerifiedGuard],
     data: { redirectNotVerifiedUrl: '/verify' },
   },
+  { path: 'complete-profile', component: CompleteProfileComponent },
 ];
 
 @NgModule({
@@ -28,6 +31,7 @@ const routes: Routes = [
     LoginComponentModule,
     RegisterComponentModule,
     VerifyComponentModule,
+    CompleteProfileComponentModule,
   ],
   exports: [RouterModule],
 })
