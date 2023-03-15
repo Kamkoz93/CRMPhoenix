@@ -1,11 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CompleteProfileComponent } from './complete-profile.component';
 
 @NgModule({
-  imports: [],
+  imports: [ReactiveFormsModule, CommonModule],
   declarations: [CompleteProfileComponent],
   providers: [],
-  exports: [CompleteProfileComponent]
+  exports: [CompleteProfileComponent],
 })
-export class CompleteProfileComponentModule {
-}
+export class CompleteProfileComponentModule {}

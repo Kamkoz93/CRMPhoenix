@@ -6,9 +6,8 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { Observable, take, switchMap, of } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { UserService } from 'src/app/services/user.service';
 
 @Injectable({ providedIn: 'root' })
 export class EmailVerifiedGuard implements CanActivate {
@@ -18,13 +17,16 @@ export class EmailVerifiedGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    const isVerified: boolean = this._authService.isUserVerified();
-    if (!isVerified) {
-      return of(
-        this._router.parseUrl(route.data['redirectNotVerifiedUrl'] || 'verify')
-      );
-    }
-
-    return of(true);
+    return this._authService.isEmailVerified().pipe(
+      take(1),
+      map((isVer) => {
+        if (isVer === false) {
+          return this._router.parseUrl(
+            route.data['redirectNotVerifiedUrl'] || '/verify'
+          );
+        }
+        return true;
+      })
+    );
   }
 }

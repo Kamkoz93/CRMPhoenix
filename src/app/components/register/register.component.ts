@@ -56,7 +56,7 @@ export class RegisterComponent {
       .subscribe({
         next: () => {
           this._authService.login({ email: email, password: password });
-          this._router.navigate(['/login']);
+          this._router.navigate(['/leads']);
         },
         error: (error: HttpErrorResponse) => {
           this.registerForm.setErrors({

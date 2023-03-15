@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { combineLatest, map, Observable, take } from 'rxjs';
 
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -18,10 +18,14 @@ export class LoggedIn implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    return this._authService.loggedIn$.pipe(
-      map((isLoggedIn) => {
-        return isLoggedIn
-          ? this._router.parseUrl(route.data['redirectUrl'] || 'logged-in')
+    return combineLatest([
+      this._authService.loggedIn$,
+      this._authService.isUserVerified(),
+    ]).pipe(
+      take(1),
+      map(([isLogged, isVerfied]) => {
+        return isLogged && isVerfied
+          ? this._router.parseUrl(route.data['redirectUrl'] || '/leads')
           : true;
       })
     );

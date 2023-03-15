@@ -7,7 +7,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { combineLatest, map, Observable, take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable()
@@ -18,9 +18,17 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    return this._authService.loggedIn$.pipe(
-      map((isLoggedIn) => {
-        return isLoggedIn ? true : this._router.parseUrl('login');
+    return combineLatest([
+      this._authService.loggedIn$,
+      this._authService.initialUserVerification,
+    ]).pipe(
+      take(1),
+      map(([isLogged, isVerfied]) => {
+        return !isLogged && !isVerfied
+          ? this._router.parseUrl(
+              route.data['redirectNotLoggedInUrl'] || '/auth/login'
+            )
+          : true;
       })
     );
   }

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
+import { NavbarComponentModule } from '../navbar/navbar.component-module';
 import { VerifyComponent } from './verify.component';
 
 @NgModule({
-  imports: [],
+  imports: [NavbarComponentModule],
   declarations: [VerifyComponent],
   providers: [],
-  exports: [VerifyComponent]
+  exports: [VerifyComponent],
 })
-export class VerifyComponentModule {
-}
+export class VerifyComponentModule {}
