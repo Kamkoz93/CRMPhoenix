@@ -10,7 +10,10 @@ import { LeadsService } from '../../services/leads.service';
 import { LeadConvertedQueryModel } from '../../queries/lead-converted.query-model';
 import { LeadModel } from '../../models/lead.model';
 import { ActivityModel } from '../../models/activity.model';
-import { FilterFormModel } from 'src/app/models/filter-form.model';
+import {
+  FilterForm2Model,
+  FilterFormModel,
+} from 'src/app/models/filter-form.model';
 import { SalesStageModel } from 'src/app/models/sales-stage.model';
 
 @Component({
@@ -26,35 +29,78 @@ export class LeadsComponent {
     .getActivities()
     .pipe(shareReplay(1));
 
-  filterForm: FormGroup = new FormGroup({
-    isHiring: new FormControl(true),
-    scopeArr: new FormArray([]),
-    companySizeArr: new FormArray([]),
+  readonly filterForm2: FormGroup = new FormGroup({
+    isHiring: new FormControl(false),
+    projectTypes: new FormArray([
+      new FormControl(), // Internal Projects
+      new FormControl(), // Recruitment Agency
+      new FormControl(), // External Projects
+    ]),
+    companySizes: new FormArray([
+      new FormControl(), // 0-50
+      new FormControl(), // 51-100
+      new FormControl(), // 101-500
+      new FormControl(), // 501-1000
+      new FormControl(), // 1001+
+    ]),
   });
 
-  readonly selectedFormValues$: Observable<FilterFormModel> =
-    this.filterForm.valueChanges.pipe(
+  readonly selectedFormValues2$: Observable<FilterForm2Model> =
+    this.filterForm2.valueChanges.pipe(
       startWith({
-        isHiring: true,
-        scopeArr: [],
-        companySizeArr: [],
+        isHiring: new FormControl(false),
+        projectTypes: new FormArray([
+          new FormControl(), // Internal Projects
+          new FormControl(), // Recruitment Agency
+          new FormControl(), // External Projects
+        ]),
+        companySizes: new FormArray([
+          new FormControl(), // 0-50
+          new FormControl(), // 51-100
+          new FormControl(), // 101-500
+          new FormControl(), // 501-1000
+          new FormControl(), // 1001+
+        ]),
       }),
-      map((form: FilterFormModel) => ({
+      map((form: FilterForm2Model) => ({
         isHiring: form.isHiring,
-        scopeArr: form.scopeArr,
-        companySizeArr: form.companySizeArr,
+        projectTypes: form.projectTypes,
+        companySizes: form.companySizes,
       })),
       shareReplay(1)
     );
 
+  // readonly selectedFormValues$: Observable<FilterFormModel> =
+  //   this.filterForm.valueChanges.pipe(
+  //     startWith({
+  //       isHiring: true,
+  //       scopeArr: [],
+  //       companySizeArr: [],
+  //     }),
+  //     map((form: FilterFormModel) => ({
+  //       isHiring: form.isHiring,
+  //       scopeArr: form.scopeArr,
+  //       companySizeArr: form.companySizeArr,
+  //     })),
+  //     shareReplay(1)
+  //   );
+
   public mappedLeads$: Observable<LeadConvertedQueryModel[]> = combineLatest([
     this._leadsService.getLeads(),
     this.activitiesList$,
-    this.selectedFormValues$,
+    this.selectedFormValues2$,
   ]).pipe(
     map(([leads, activities, filterForm]) => {
       const mappedLeads = this.mapLeads(leads, activities);
-      return this.filterLeads(mappedLeads, filterForm);
+      console.log('Mapped Leads:', mappedLeads);
+      console.log(filterForm.isHiring);
+      return mappedLeads.filter((lead) => {
+        if (!filterForm.isHiring) {
+          console.log(filterForm.isHiring);
+          return false;
+        }
+        return filterForm.isHiring === lead.hiring.isHiring;
+      });
     })
   );
 
@@ -66,72 +112,121 @@ export class LeadsComponent {
     '1001+',
   ]);
 
-  private filterLeads(
-    leads: LeadConvertedQueryModel[],
-    filter: FilterFormModel
-  ) {
-    const filterByHiring = (lead: LeadConvertedQueryModel) => {
-      console.log(filter.isHiring);
-      if (!filter.isHiring) {
-        return true;
-      }
-      return filter.isHiring === lead.hiring.isHiring;
-    };
+  // private filterLeads(
+  //   leads: LeadConvertedQueryModel[],
+  //   filter: FilterForm2Model
+  // ) {
+  // const filterByHiring = (lead: LeadConvertedQueryModel) => {
+  //   if (!filter.isHiring) {
+  //     return true;
+  //   }
+  //   return filter.isHiring === lead.hiring.isHiring;
+  // };
 
-    const filterByScope = (lead: LeadConvertedQueryModel) => {
-      console.log(filter.scopeArr);
-      if (
-        !filter.scopeArr ||
-        filter.scopeArr === null ||
-        filter.scopeArr.length === 0
-      ) {
-        return true;
-      }
-      return filter.scopeArr.every((activity) => lead.scope.includes(activity));
-    };
+  // const filterByScope = (lead: LeadConvertedQueryModel) => {
+  //   if (
+  //     !filter.projectTypes ||
+  //     filter.projectTypes === null ||
+  //     filter.projectTypes.length === 0
+  //   ) {
+  //     return true;
+  //   }
+  //   return filter.projectTypes.every((activity) =>
+  //     lead.scope.includes(activity)
+  //   );
+  // };
 
-    const filterByCompanySize = (lead: LeadConvertedQueryModel) => {
-      console.log(filter.companySizeArr);
-      if (
-        !filter.companySizeArr ||
-        filter.companySizeArr === null ||
-        filter.companySizeArr.length === 0
-      ) {
-        return true;
-      }
-      return filter.companySizeArr.some((sizeRange) => {
-        const [minSize, maxSize] = sizeRange
-          ?.split('-')
-          ?.map((size) => parseInt(size, 10));
-        const companySize = lead.companySize.total;
-        return (
-          companySize >= minSize && (maxSize ? companySize < maxSize : true)
-        );
-      });
-    };
-    // console.log(
-    //   leads.filter(
-    //     (lead) =>
-    //       filterByHiring(lead) &&
-    //       filterByScope(lead) &&
-    //       filterByCompanySize(lead)
-    //   )
-    // );
-    return leads.filter(
-      (lead) =>
-        filterByHiring(lead) && filterByScope(lead) && filterByCompanySize(lead)
-    );
-  }
+  // const filterByCompanySize = (lead: LeadConvertedQueryModel) => {
+  //   if (
+  //     !filter.companySizes ||
+  //     filter.companySizes === null ||
+  //     filter.companySizes.length === 0
+  //   ) {
+  //     return true;
+  //   }
+  //   return filter.companySizes.some((sizeRange) => {
+  //     const [minSize, maxSize] = sizeRange
+  //       ?.split('-')
+  //       ?.map((size) => parseInt(size, 10));
+  //     const companySize = lead.companySize.total;
+  //     return (
+  //       companySize >= minSize && (maxSize ? companySize < maxSize : true)
+  //     );
+  //   });
+  // };
+
+  // const filteredLeads = leads.filter(
+  //   (lead) => filterByScope(lead) && filterByCompanySize(lead)
+  // );
+
+  //   return leads.filter((lead) => filterByHiring(lead) || !filter.isHiring);
+  // }
+
+  // private filterLeads(
+  //   leads: LeadConvertedQueryModel[],
+  //   filter: FilterForm2Model
+  // ) {
+  //   const filterByHiring = (lead: LeadConvertedQueryModel) => {
+  //     if (!filter.isHiring) {
+  //       return true;
+  //     }
+  //     return filter.isHiring === lead.hiring.isHiring;
+  //   };
+
+  //   const filterByScope = (lead: LeadConvertedQueryModel) => {
+  //     if (
+  //       !filter.projectTypes ||
+  //       filter.projectTypes === null ||
+  //       filter.projectTypes.length === 0
+  //     ) {
+  //       return true;
+  //     }
+  //     return filter.projectTypes.every((activity) =>
+  //       lead.scope.includes(activity)
+  //     );
+  //   };
+
+  //   const filterByCompanySize = (lead: LeadConvertedQueryModel) => {
+  //     if (
+  //       !filter.companySizes ||
+  //       filter.companySizes === null ||
+  //       filter.companySizes.length === 0
+  //     ) {
+  //       return true;
+  //     }
+  //     return filter.companySizes.some((sizeRange) => {
+  //       const [minSize, maxSize] = sizeRange
+  //         ?.split('-')
+  //         ?.map((size) => parseInt(size, 10));
+  //       const companySize = lead.companySize.total;
+  //       return (
+  //         companySize >= minSize && (maxSize ? companySize < maxSize : true)
+  //       );
+  //     });
+  //   };
+  //   // console.log(
+  //   //   leads.filter(
+  //   //     (lead) =>
+  //   //       filterByHiring(lead) &&
+  //   //       filterByScope(lead) &&
+  //   //       filterByCompanySize(lead)
+  //   //   )
+  //   // );
+  //   return leads.filter(
+  //     (lead) => filterByHiring(lead)
+  //     // && filterByScope(lead) && filterByCompanySize(lead)
+  //   );
+  // }
 
   public setScopeArr(event: any) {
-    const scopeArray = this.filterForm.get('scopeArr') as FormArray;
+    const projectTypesArr = this.filterForm2.get('projectTypes') as FormArray;
     if (event.target.checked) {
-      scopeArray.push(new FormControl(event.target.value));
+      projectTypesArr.push(new FormControl(event.target.value));
     } else {
       let i = 0;
-      scopeArray.controls.forEach((activity) => {
+      projectTypesArr.controls.forEach((activity) => {
         if (activity.value === event.target.value) {
-          scopeArray.removeAt(i);
+          projectTypesArr.removeAt(i);
           return;
         }
         i++;
@@ -140,14 +235,14 @@ export class LeadsComponent {
   }
 
   public setCompanySizeArr(event: any) {
-    const sizeArray = this.filterForm.get('companySizeArr') as FormArray;
+    const companySizesArr = this.filterForm2.get('companySizes') as FormArray;
     if (event.target.checked) {
-      sizeArray.push(new FormControl(event.target.value));
+      companySizesArr.push(new FormControl(event.target.value));
     } else {
       let i = 0;
-      sizeArray.controls.forEach((sizeRange) => {
+      companySizesArr.controls.forEach((sizeRange) => {
         if (sizeRange.value === event.target.value) {
-          sizeArray.removeAt(i);
+          companySizesArr.removeAt(i);
           return;
         }
         i++;
@@ -155,11 +250,11 @@ export class LeadsComponent {
     }
   }
 
-  public resetForm() {
-    this.filterForm.setControl('isHiring', new FormControl(true));
-    this.filterForm.setControl('scopeArr', new FormArray([]));
-    this.filterForm.setControl('companySizeArr', new FormArray([]));
-  }
+  // public resetForm() {
+  //   this.filterForm.setControl('isHiring', new FormControl(true));
+  //   this.filterForm.setControl('scopeArr', new FormArray([]));
+  //   this.filterForm.setControl('companySizeArr', new FormArray([]));
+  // }
 
   private mapLeads(leads: LeadModel[], activities: ActivityModel[]) {
     const activitiesMap = activities.reduce((a, c) => {
