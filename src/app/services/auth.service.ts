@@ -14,6 +14,7 @@ import { DataResponseModel } from '../models/data-response.model';
 import { STORAGE } from './storage';
 import { CredentialsResponseDataModel } from '../models/credentials-response-data.model';
 import { AuthUserDataModel } from '../models/auth-user-data.model';
+import jwt_decode from 'jwt-decode';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -36,15 +37,15 @@ export class AuthService {
     return this._storage.hasOwnProperty('accessToken') ?? false;
   }
 
-  // private _isUserVerifiedSubject: BehaviorSubject<boolean> =
-  //   new BehaviorSubject<any>('');
-  // public isUserVerified$: Observable<boolean> =
-  //   this._isUserVerifiedSubject.asObservable();
-
-  // private _isEmailVerifiedSubject: BehaviorSubject<boolean> =
-  //   new BehaviorSubject<any>('');
-  // public isEmailVerified$: Observable<boolean> =
-  //   this._isEmailVerifiedSubject.asObservable();
+  hasRole(role: string): Observable<boolean> {
+    const token = this._storage.getItem('accessToken');
+    if (token) {
+      const decodedToken: { role?: string } = jwt_decode(token);
+      const decodedRole: string = decodedToken?.role ?? '';
+      return of(decodedRole === role);
+    }
+    return of(false);
+  }
 
   public getMeInformation(): Observable<AuthUserDataModel> {
     return this._httpClient.get<AuthUserDataModel>(

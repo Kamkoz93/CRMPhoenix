@@ -8,7 +8,8 @@
                         <h2 class="mb-4">Create a new lead</h2>
                         <div class="d-flex mb-3">
                             <button class="btn btn-phoenix-primary me-2 px-6">Cancel</button>
-                            <button class="btn btn-primary">Create lead</button>
+                            <button (click)="onCreateLeadFormSubmitted(createLeadForm)" class="btn btn-primary">Create
+                                lead</button>
                         </div>
                     </div>
                 </div>
@@ -17,131 +18,164 @@
         <div class="row">
             <div class="col-xl-12">
                 <h4 class="mb-3">Lead Information </h4>
-                <form class="row g-3 mb-9">
+                <form class="row g-3 mb-9 needs-validation" [formGroup]="createLeadForm"
+                    (ngSubmit)="onCreateLeadFormSubmitted(createLeadForm)">
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputCompanyname" type="text"
-                                placeholder="Company name" />
+                            <input formControlName="name" class="form-control" id="floatingInputCompanyname"
+                                type="email" placeholder="Company name" required />
                             <label for="floatingInputCompanyname">Company name</label>
+                            <div *ngIf="createLeadForm.get('name')?.errors?.['required'] && createLeadForm.get('name')?.touched"
+                                class="form-check-label">
+                                Please
+                                Company name
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputWebsitelink" type="text"
-                                placeholder="Website link" />
+                            <input formControlName="websiteLink" class="form-control" id="floatingInputWebsitelink"
+                                type="text" placeholder="Website link" required />
                             <label for="floatingInputWebsitelink">Website link</label>
+                            <div *ngIf="(createLeadForm.get('websiteLink')?.errors?.['required'] || createLeadForm.get('websiteLink')?.errors?.['pattern']) && createLeadForm.get('websiteLink')?.touched"
+                                class="form-check-label">
+                                Please
+                                enter valid link
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputLinkedin" type="text"
-                                placeholder="Linkedin link" />
+                            <input formControlName="linkedIn" class="form-control" id="floatingInputLinkedin"
+                                type="text" placeholder="Linkedin link" required />
                             <label for="floatingInputLinkedin">Linkedin link</label>
+                            <div *ngIf="(createLeadForm.get('linkedIn')?.errors?.['required'] || createLeadForm.get('linkedIn')?.errors?.['pattern']) && createLeadForm.get('linkedIn')?.touched"
+                                class="form-check-label">
+                                Please
+                                enter valid LinkedIn link
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputLocation" type="text" placeholder="Location" />
+                            <input formControlName="location" class="form-control" id="floatingInputLocation"
+                                type="text" placeholder="Location" required />
                             <label for="floatingInputLocation">Location</label>
+                            <div *ngIf="createLeadForm.get('location')?.errors?.['required'] && createLeadForm.get('location')?.touched"
+                                class="form-check-label">
+                                Please
+                                Company location
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputIndustry" type="text" placeholder="Industry" />
+                            <input formControlName="industry" class="form-control" id="floatingInputIndustry"
+                                type="text" placeholder="Industry" required />
                             <label for="floatingInputIndustry">Industry</label>
+                            <div *ngIf="createLeadForm.get('industry')?.errors?.['required'] && createLeadForm.get('industry')?.touched"
+                                class="form-check-label">
+                                Please
+                                Company industry type
+                            </div>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-4">
                         <div class="form-floating">
-                            <input class="form-control" id="floatingInputRevenue" type="text" placeholder="revenue" />
+                            <input formControlName="annualRevenue" class="form-control" id="floatingInputRevenue"
+                                type="text" placeholder="revenue" required />
                             <label for="floatingInputRevenue">Annual revenue </label>
+                            <div *ngIf="createLeadForm.get('annualRevenue')?.errors?.['required'] && createLeadForm.get('annualRevenue')?.touched"
+                                class="form-check-label">
+                                Please
+                                Company revenue
+                            </div>
                         </div>
                     </div>
                     <h4 class="mt-6">Activities</h4>
                     <div class="col-12">
                         <div class="form-floating">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" id="inlineCheckbox1" type="checkbox" value="option1" />
-                                <label class="form-check-label" for="inlineCheckbox1">Internal Project</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" id="inlineCheckbox2" type="checkbox" value="option2" />
-                                <label class="form-check-label" for="inlineCheckbox2">External Project</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" id="inlineCheckbox2" type="checkbox" value="option2" />
-                                <label class="form-check-label" for="inlineCheckbox2">Recruitment Agency</label>
+                            <div class="form-check form-check-inline" *ngFor="let activity of activitiesList$ | async">
+                                <input class="form-check-input" id="inlineCheckbox1" type="checkbox"
+                                    value="{{activity.name}}" required />
+                                <label class="form-check-label" for="inlineCheckbox1">{{activity.name}}</label>
                             </div>
                         </div>
                     </div>
                     <h4 class="mt-6">Company Size</h4>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <input class="form-control" id="floatingInputTotalSize" type="number"
-                                placeholder="Total size" />
-                            <label for="floatingInputTotalSize">Total size</label>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <input class="form-control" id="floatingInputDevSize" type="number"
-                                placeholder="Dev Size" />
-                            <label for="floatingInputDevSize">Dev Size</label>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <input class="form-control" id="floatingInputFESize" type="number" placeholder="FE Size" />
-                            <label for="floatingInputFESize">FE Size</label>
-                        </div>
-                    </div>
-                    <h4 class="mt-6">Hiring Information</h4>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" id="flexSwitchCheckDefault" type="checkbox" />
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Is currently
-                                    hiring?</label>
+                    <ng-container formGroupName="companySize" class="col-sm-6 col-md-4">
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <input formControlName="total" class="form-control" id="floatingInputTotalSize"
+                                    type="number" placeholder="Total size" required />
+                                <label for="floatingInputTotalSize">Total size</label>
+                                <div *ngIf="(createLeadForm.get('companySize.total')?.errors?.['required'] || createLeadForm.get('companySize.total')?.errors?.['min'] ) && createLeadForm.get('companySize.total')?.touched"
+                                    class="form-check-label">
+                                    Please
+                                    type total number of employees, value must be at least 1
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" id="flexSwitchCheckDefault2" type="checkbox" />
-                                <label class="form-check-label" for="flexSwitchCheckDefault2">Is hiring
-                                    junior?</label>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <input formControlName="dev" class="form-control" id="floatingInputDevSize"
+                                    type="number" placeholder="Dev Size" required />
+                                <label for="floatingInputDevSize">Dev Size</label>
+                                <div *ngIf="(createLeadForm.get('companySize.dev')?.errors?.['required'] || createLeadForm.get('companySize.dev')?.errors?.['min'] ) && createLeadForm.get('companySize.dev')?.touched"
+                                    class="form-check-label">
+                                    Please
+                                    type total number of employees, value must be at least 1
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div class="form-floating">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" id="flexSwitchCheckDefault3" type="checkbox" />
-                                <label class="form-check-label" for="flexSwitchCheckDefault3">Has Talent
-                                    program?</label>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <input formControlName="fe" class="form-control" id="floatingInputFESize" type="number"
+                                    placeholder="FE Size" required />
+                                <label for="floatingInputFESize">FE Size</label>
+                                <div *ngIf="(createLeadForm.get('companySize.fe')?.errors?.['required'] || createLeadForm.get('companySize.fe')?.errors?.['min'] ) && createLeadForm.get('companySize.fe')?.touched"
+                                    class="form-check-label">
+                                    Please
+                                    type total number of employees, value must be at least 1
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <h4 class="mt-6">Status</h4>
-                    <div class="col-12">
-                        <select class="form-select form-select-lg mb-3">
-                            <option selected="">Preliminaries</option>
-                            <option value="1">Investigation</option>
-                            <option value="2">Demonstrating Capabilities</option>
-                            <option value="3">Obtaining Commitment</option>
-                        </select>
-                    </div>
-                    <h4 class="mt-6">Notes</h4>
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <textarea class="form-control" id="floatingProjectOverview"
-                                placeholder="Leave a comment here" style="height: 128px"></textarea>
-                            <label for="floatingProjectOverview">Lead description</label>
+                    </ng-container>
+                    <ng-container formGroupName="hiring">
+                        <h4 class="mt-6">Hiring Information</h4>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <div class="form-check form-switch">
+                                    <input formControlName="active" class="form-check-input" id="flexSwitchCheckDefault"
+                                        type="checkbox" value="true" />
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">Is currently
+                                        hiring?</label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <div class="form-check form-switch">
+                                    <input formControlName="junior" class="form-check-input"
+                                        id="flexSwitchCheckDefault2" type="checkbox" value="true" />
+                                    <label class="form-check-label" for="flexSwitchCheckDefault2">Is hiring
+                                        junior?</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <div class="form-floating">
+                                <div class="form-check form-switch">
+                                    <input formControlName="talentProgram" class="form-check-input"
+                                        id="flexSwitchCheckDefault3" type="checkbox" value="true" />
+                                    <label class="form-check-label" for="flexSwitchCheckDefault3">Has Talent
+                                        program?</label>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
                     <div class="col-12 d-flex justify-content-end mt-6">
-                        <button class="btn btn-primary">Create lead</button>
+                        <button type="submit" class="btn btn-primary">Create lead</button>
                     </div>
                 </form>
             </div>

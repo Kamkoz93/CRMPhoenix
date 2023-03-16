@@ -13,6 +13,7 @@ import { passwordValidator } from 'src/app/custom-validators/password.validator'
 import { passwordMatchValidator } from 'src/app/custom-validators/password-match.validator';
 import { HttpErrorResponse } from '@angular/common/http';
 import { termsConditionsValidator } from 'src/app/custom-validators/terms-condition.validator';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -53,9 +54,13 @@ export class RegisterComponent {
     const password: string = registerForm.get('password')?.value;
     this._userService
       .registerUser({ email: email, password: password })
+      .pipe(
+        switchMap(() =>
+          this._authService.login({ email: email, password: password })
+        )
+      )
       .subscribe({
         next: () => {
-          this._authService.login({ email: email, password: password });
           this._router.navigate(['/leads']);
         },
         error: (error: HttpErrorResponse) => {

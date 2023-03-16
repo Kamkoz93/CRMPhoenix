@@ -1,5 +1,5 @@
 export interface LeadConvertedQueryModel {
-  readonly name?: string;
+  readonly name: string;
   readonly linkedInUrl: string;
   readonly websiteUrl: string;
   readonly scope: string[];

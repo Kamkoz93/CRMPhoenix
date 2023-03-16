@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { NavbarComponentModule } from '../navbar/navbar.component-module';
 import { FooterComponentModule } from '../footer/footer.component-module';
 import { LeadsComponent } from './leads.component';
+import { HasRoleDirective } from 'src/app/directives/has-role.directive';
 
 @NgModule({
   imports: [
@@ -16,10 +17,10 @@ import { LeadsComponent } from './leads.component';
     MatTableModule,
     MatListModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  declarations: [LeadsComponent],
+  declarations: [LeadsComponent, HasRoleDirective],
   providers: [],
   exports: [LeadsComponent],
 })
-export class LeadsComponentModule { }
+export class LeadsComponentModule {}

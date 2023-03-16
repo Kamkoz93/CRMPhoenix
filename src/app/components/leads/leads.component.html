@@ -1,14 +1,15 @@
 <app-navbar></app-navbar>
 <div class="content">
-    <div class="pb-9">
-        <h2 class="mb-4">2 Companies</h2>
-        <div id="dealsTable" *ngIf="mappedLeads$ | async as leads"
+    <div class="pb-9" *ngIf="mappedLeads$ | async as leads">
+        <h2 class="mb-4">{{leads.length}} Companies</h2>
+        <div id="dealsTable"
             data-list='{"valueNames":["name","email","phone","contact","company","date"],"page":10,"pagination":true}'>
             <div class="row g-3 justify-content-between mb-4">
                 <div class="col-auto">
                     <div class="d-md-flex justify-content-between">
-                        <div>
-                            <button class="btn btn-primary me-4"><span class="fas fa-plus me-2"></span>Create
+                        <div *hasRole="'admin'">
+                            <button routerLink="/create-lead" class="btn btn-primary me-4"><span
+                                    class="fas fa-plus me-2"></span>Create
                                 Lead</button>
                         </div>
                     </div>
@@ -22,7 +23,7 @@
                         <div class="modal fade" id="filterModal" tabindex="-1">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border">
-                                    <!-- <form [formGroup]="filterForm" id="addEventForm" autocomplete="off">
+                                    <form [formGroup]="filterForm" id="addEventForm" autocomplete="off">
                                         <div class="modal-header border-200 p-4">
                                             <h5 class="modal-title text-1000 fs-2 lh-sm">Filter</h5>
                                             <button class="btn p-1 text-900" type="button" data-bs-dismiss="modal"
@@ -34,61 +35,7 @@
                                                     right now</label>
                                                 <div class="form-check">
                                                     <input formControlName="isHiring" class="form-check-input"
-                                                        type="checkbox" value="true" />
-                                                    <label class="form-check-label">Campaign
-                                                        active</label>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="fw-bold mb-2 text-1000">Scope</label>
-                                                <div *ngFor="let activity of activitiesList$ | async"
-                                                    class="form-check">
-                                                    <input (change)="setScopeArr($event)" formArrayName="scopeArr"
-                                                        class="form-check-input" type="checkbox"
-                                                        value={{activity.name}} />
-                                                    <label class="form-check-label">{{activity.name}}</label>
-                                                </div>
-
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="fw-bold mb-2 text-1000">Size</label>
-                                                <div *ngFor="let sizeOpt of companySizeOptions$ | async"
-                                                    class="form-check">
-                                                    <input formArrayName="companySizeArr"
-                                                        (change)="setCompanySizeArr($event)" class="form-check-input"
-                                                        type="checkbox" value="{{sizeOpt}}" />
-                                                    <label class="form-check-label">{{sizeOpt}}</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="modal-footer d-flex justify-content-end align-items-center px-4 pb-4 border-0 pt-3">
-                                            <button (click)="resetForm()"
-                                                class="btn btn-sm btn-phoenix-primary px-4 fs--2 my-0" type="button">
-                                                <span class="fas fa-arrows-rotate me-2 fs--2"></span>Reset</button>
-                                            <button data-bs-dismiss="modal"
-                                                class="btn btn-sm btn-primary px-9 fs--2 my-0"
-                                                type="button">Done</button>
-                                        </div>
-                                    </form> -->
-
-
-
-
-
-                                    <form [formGroup]="filterForm2" id="addEventForm" autocomplete="off">
-                                        <div class="modal-header border-200 p-4">
-                                            <h5 class="modal-title text-1000 fs-2 lh-sm">Filter</h5>
-                                            <button class="btn p-1 text-900" type="button" data-bs-dismiss="modal"
-                                                aria-label="Close"><span class="fas fa-times fs--1"> </span></button>
-                                        </div>
-                                        <div class="modal-body pt-4 pb-2 px-4">
-                                            <div class="mb-3">
-                                                <label class="fw-bold mb-2 text-1000">Company is hiring
-                                                    right now</label>
-                                                <div class="form-check">
-                                                    <input formControlName="isHiring" class="form-check-input"
-                                                        type="checkbox" value="true" />
+                                                        type="checkbox" value=true />
                                                     <label class="form-check-label">Campaign
                                                         active</label>
                                                 </div>
@@ -96,9 +43,10 @@
                                             <div class="mb-3">
                                                 <div formArrayName="projectTypes">
                                                     <label class="fw-bold mb-2 text-1000">Scope</label>
-                                                    <div *ngFor="let activity of activitiesList$ | async; let i=index"
+                                                    <div #checkboxContainer
+                                                        *ngFor="let activity of activitiesList$ | async"
                                                         class="form-check">
-                                                        <input (change)="setScopeArr($event)" [formControlName]="i"
+                                                        <input id="checkbox" (change)="setScopeArr($event.target)"
                                                             class="form-check-input" type="checkbox"
                                                             value={{activity.name}} />
                                                         <label class="form-check-label">{{activity.name}}</label>
@@ -109,8 +57,8 @@
                                                         <label class="fw-bold mb-2 text-1000">Size</label>
                                                         <div *ngFor="let sizeOpt of companySizeOptions$ | async; let i=index"
                                                             class="form-check">
-                                                            <input [formControlName]="i"
-                                                                (change)="setCompanySizeArr($event)"
+                                                            <input id="checkbox"
+                                                                (change)="setCompanySizesArr($event.target)"
                                                                 class="form-check-input" type="checkbox"
                                                                 value="{{sizeOpt}}" />
                                                             <label class="form-check-label">{{sizeOpt}}</label>
@@ -121,53 +69,14 @@
                                         </div>
                                         <div
                                             class="modal-footer d-flex justify-content-end align-items-center px-4 pb-4 border-0 pt-3">
-                                            <button class="btn btn-sm btn-phoenix-primary px-4 fs--2 my-0"
-                                                type="button">
+                                            <button (click)="resetFilterForm()"
+                                                class="btn btn-sm btn-phoenix-primary px-4 fs--2 my-0" type="button">
                                                 <span class="fas fa-arrows-rotate me-2 fs--2"></span>Reset</button>
                                             <button data-bs-dismiss="modal"
                                                 class="btn btn-sm btn-primary px-9 fs--2 my-0"
                                                 type="button">Done</button>
                                         </div>
                                     </form>
-                                    <!-- 
-                                    <form [formGroup]="filterForm2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" formControlName="isHiring">
-                                            <label class="form-check-label">Is Hiring</label>
-                                        </div>
-
-                                        <div class="form-check" formArrayName="projectTypes">
-                                            <label>Project Types:</label>
-                                            <div *ngFor="let activity of activitiesList$ | async; let i=index">
-                                                <input class="form-check-input" type="checkbox" [formControlName]="i"
-                                                    value="{{ activity.name }}">
-                                                <label class="form-check-label">{{ activity.name }}</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-check" formArrayName="companySizes">
-                                            <label>Company Sizes:</label>
-                                            <div *ngFor="let companySize of companySizesArray.controls; let i=index">
-                                                <input class="form-check-input" type="checkbox" [formControlName]="i">
-                                                <label class="form-check-label">{{ companySize.value }}</label>
-                                            </div>
-                                        </div>
-                                    </form> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                 </div>
                             </div>
                         </div>
