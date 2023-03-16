@@ -1,0 +1,183 @@
+<app-navbar></app-navbar>
+<div class="content">
+    <div class="pb-9" *ngIf="mappedLeads$ | async as leads">
+        <h2 class="mb-4">{{leads.length}} Companies</h2>
+        <div id="dealsTable"
+            data-list='{"valueNames":["name","email","phone","contact","company","date"],"page":10,"pagination":true}'>
+            <div class="row g-3 justify-content-between mb-4">
+                <div class="col-auto">
+                    <div class="d-md-flex justify-content-between">
+                        <div *hasRole="'admin'">
+                            <button routerLink="/create-lead" class="btn btn-primary me-4"><span
+                                    class="fas fa-plus me-2"></span>Create
+                                Lead</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex">
+                        <button class="btn px-3 btn-phoenix-secondary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#filterModal" data-boundary="window" aria-haspopup="true"
+                            aria-expanded="false" data-bs-reference="parent"><span
+                                class="fa-solid fa-filter text-primary" data-fa-transform="down-3"></span></button>
+                        <div class="modal fade" id="filterModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border">
+                                    <form [formGroup]="filterForm" id="addEventForm" autocomplete="off">
+                                        <div class="modal-header border-200 p-4">
+                                            <h5 class="modal-title text-1000 fs-2 lh-sm">Filter</h5>
+                                            <button class="btn p-1 text-900" type="button" data-bs-dismiss="modal"
+                                                aria-label="Close"><span class="fas fa-times fs--1"> </span></button>
+                                        </div>
+                                        <div class="modal-body pt-4 pb-2 px-4">
+                                            <div class="mb-3">
+                                                <label class="fw-bold mb-2 text-1000">Company is hiring
+                                                    right now</label>
+                                                <div class="form-check">
+                                                    <input formControlName="isHiring" class="form-check-input"
+                                                        type="checkbox" value=true />
+                                                    <label class="form-check-label">Campaign
+                                                        active</label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div formArrayName="projectTypes">
+                                                    <label class="fw-bold mb-2 text-1000">Scope</label>
+                                                    <div #checkboxContainer
+                                                        *ngFor="let activity of activitiesList$ | async"
+                                                        class="form-check">
+                                                        <input id="checkbox" (change)="setScopeArr($event.target)"
+                                                            class="form-check-input" type="checkbox"
+                                                            value={{activity.name}} />
+                                                        <label class="form-check-label">{{activity.name}}</label>
+                                                    </div>
+                                                </div>
+                                                <div formArrayName="companySizes">
+                                                    <div class="mb-3">
+                                                        <label class="fw-bold mb-2 text-1000">Size</label>
+                                                        <div *ngFor="let sizeOpt of companySizeOptions$ | async; let i=index"
+                                                            class="form-check">
+                                                            <input id="checkbox"
+                                                                (change)="setCompanySizesArr($event.target)"
+                                                                class="form-check-input" type="checkbox"
+                                                                value="{{sizeOpt}}" />
+                                                            <label class="form-check-label">{{sizeOpt}}</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="modal-footer d-flex justify-content-end align-items-center px-4 pb-4 border-0 pt-3">
+                                            <button (click)="resetFilterForm()"
+                                                class="btn btn-sm btn-phoenix-primary px-4 fs--2 my-0" type="button">
+                                                <span class="fas fa-arrows-rotate me-2 fs--2"></span>Reset</button>
+                                            <button data-bs-dismiss="modal"
+                                                class="btn btn-sm btn-primary px-9 fs--2 my-0"
+                                                type="button">Done</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 mx-lg-n6 px-lg-6">
+                <div class="table-responsive scrollbar mx-n1 px-1 border-top">
+                    <table class="table fs--1 mb-0 leads-table">
+                        <thead>
+                            <tr>
+                                <th class="sort white-space-nowrap align-middle text-uppercase" scope="col">
+                                    Name</th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase border-end" scope="col"
+                                    style="width: 5%;">
+                                    Scope
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase  border-end" scope="col"
+                                    style="width: 5%;">
+                                    Hiring
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase border-end" scope="col">
+                                    Industry
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase  border-end" scope="col">Location
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase  border-end" scope="col">Size
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase  border-end" scope="col">Revenue
+                                </th>
+                                <th class="sort align-middle ps-4 pe-5 text-uppercase  border-end" scope="col">Sales
+                                    stage
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="list" id="deal-tables-body">
+                            <tr *ngFor="let lead of leads"
+                                class="hover-actions-trigger btn-reveal-trigger position-static">
+                                <td class="name align-middle white-space-nowrap">
+
+                                    <div class="d-flex align-items-center">
+                                        <div><a class="fs-0 fw-bold" href="#">{{lead.name}}</a>
+                                            <div class="d-flex align-items-center">
+                                                <a href="{{lead.linkedInUrl}}" target="_blank"><i
+                                                        class="fa-brands fa-linkedin"></i></a>
+                                                <a href="{{lead.websiteUrl}}" target="_blank"><i
+                                                        class="fa-solid fa-link"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="align-middle white-space-nowrap fw-semi-bold text-1000 ps-4 border-end">
+                                    <div *ngFor="let item of lead.scope"><span
+                                            class="badge badge-phoenix badge-phoenix-warning">{{item}}</span></div>
+                                </td>
+                                <td class="align-middle white-space-nowrap fw-semi-bold text-1000 ps-4 border-end">
+                                    <div>Is hiring:
+                                        <ng-container *ngIf="lead.hiring.isHiring; else notHiring">
+                                            <i class="fa-solid fa-check"></i>
+                                        </ng-container>
+                                    </div>
+                                    <div>Juniors:
+                                        <ng-container *ngIf="lead.hiring.juniors; else notHiring">
+                                            <i class="fa-solid fa-check"></i>
+                                        </ng-container>
+                                    </div>
+                                    <div>Talent Program :
+                                        <ng-container *ngIf="lead.hiring.talentProgram; else notHiring">
+                                            <i class="fa-solid fa-check"></i>
+                                        </ng-container>
+                                    </div>
+                                    <ng-template #notHiring>
+                                        <i class="fa-solid fa-times"></i>
+                                    </ng-template>
+                                </td>
+                                <td
+                                    class="company align-middle white-space-nowrap text-600 ps-4 border-end fw-semi-bold text-1000">
+                                    {{lead.industry}}</td>
+                                <td class="date align-middle white-space-nowrap text-600 ps-4 text-700 border-end">
+                                    {{lead.location}}</td>
+                                <td class="date align-middle white-space-nowrap text-600 ps-4 text-700 border-end">
+                                    <div>Total: {{lead.companySize.total}}</div>
+                                    <div>Dev: {{lead.companySize.dev}}</div>
+                                    <div>FE: {{lead.companySize.fe}}</div>
+                                </td>
+                                <td class="date align-middle white-space-nowrap text-600 ps-4 text-700 border-end">
+                                    <div>Total: {{lead.revenue}}</div>
+                                    <div>PE: 1</div>
+                                </td>
+                                <td class="date align-middle white-space-nowrap text-600 ps-4 text-700 border-end"><span
+                                        class="badge badge-phoenix badge-phoenix-primary">Investigation</span></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <app-footer></app-footer>
