@@ -5,6 +5,7 @@ import { FooterComponentModule } from '../footer/footer.component-module';
 import { CreateLeadComponent } from './create-lead.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     ReactiveFormsModule,
     CommonModule,
     MatSnackBarModule,
+    RouterModule,
   ],
   declarations: [CreateLeadComponent],
   providers: [],
