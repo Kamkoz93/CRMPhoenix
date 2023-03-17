@@ -20,6 +20,7 @@ import { AlwaysFalseGuard } from './guards/always-false/always-false.guard';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { EmailVerifiedGuard } from './guards/email-verified/email-verified.guard';
 import { HaveBioGuard } from './guards/have-bio/have-bio.guard';
+import { IsAdmin } from './guards/id-admin/id-admin.guard';
 import { LoggedIn } from './guards/logged-in/logged-in.guard';
 
 @NgModule({
@@ -80,10 +81,11 @@ import { LoggedIn } from './guards/logged-in/logged-in.guard';
       {
         path: 'create-lead',
         component: CreateLeadComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, IsAdmin],
         data: {
           redirectNotLoggedInUrl: '/auth/login',
           redirectUrl: 'logged-in',
+          redirectNotAdmin: '/leads',
         },
       },
 

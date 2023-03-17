@@ -10,6 +10,7 @@ import { AlwaysFalseGuard } from './guards/always-false/always-false.guard';
 import { AuthGuard } from './guards/auth/auth.guard';
 import { EmailVerifiedGuard } from './guards/email-verified/email-verified.guard';
 import { HaveBioGuard } from './guards/have-bio/have-bio.guard';
+import { IsAdmin } from './guards/id-admin/id-admin.guard';
 import { LoggedIn } from './guards/logged-in/logged-in.guard';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { LoaderInterceptor } from './services/loader.interceptor';
@@ -47,6 +48,7 @@ import { STORAGE } from './services/storage';
     LoggedIn,
     AuthGuard,
     AlwaysFalseGuard,
+    IsAdmin,
     HaveBioGuard,
   ],
   bootstrap: [AppComponent],

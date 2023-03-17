@@ -4,13 +4,18 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, shareReplay } from 'rxjs';
 import { Router } from '@angular/router';
 import { ActivityModel } from '../../models/activity.model';
 import { LeadsService } from '../../services/leads.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  CompanySizeModel,
+  CreateLeadModel,
+  HiringModel,
+} from 'src/app/models/create-lead.model';
 
 @Component({
   selector: 'app-create-lead',
@@ -35,10 +40,10 @@ export class CreateLeadComponent {
     location: new FormControl('', [Validators.required]),
     industry: new FormControl('', [Validators.required]),
     annualRevenue: new FormControl('', [Validators.required]),
-    linkedIn: new FormControl('', [
+    linkedinLink: new FormControl('', [
       Validators.pattern('https?://www.linkedin.com/.+'),
     ]),
-    activityIds: new FormControl(
+    activityIds: new FormArray(
       [],
       [Validators.required, Validators.minLength(1)]
     ),
@@ -58,31 +63,60 @@ export class CreateLeadComponent {
     .getActivities()
     .pipe(shareReplay(1));
 
+  public setAcitiviesArr(data: any) {
+    const activitiesIdsArr = this.createLeadForm.get(
+      'activityIds'
+    ) as FormArray;
+
+    if (data.checked) {
+      activitiesIdsArr.push(new FormControl(data.value));
+    } else {
+      const index = activitiesIdsArr.controls.findIndex(
+        (x) => x.value == data.value
+      );
+      activitiesIdsArr.removeAt(index);
+    }
+  }
+
   onCreateLeadFormSubmitted(createLeadForm: FormGroup) {
-    // if (this.createLeadForm.invalid) {
-    //   this._snackBar.open('Form is invalid', 'Close');
-    //   return;
-    // }
+    if (this.createLeadForm.invalid) {
+      this.createLeadForm.markAllAsTouched();
+      this._snackBar.open(
+        'Something went wrong, please check your form',
+        'Close',
+        {
+          duration: 3000,
+        }
+      );
+      return;
+    }
 
     const name: string = createLeadForm.get('name')?.value;
     const websiteLink: string = createLeadForm.get('websiteLink')?.value;
+    const linkedinLink: string = createLeadForm.get('linkedinLink')?.value;
     const location: string = createLeadForm.get('location')?.value;
     const industry: string = createLeadForm.get('industry')?.value;
-    const annualRevenue: number = createLeadForm.get('annualRevenue')?.value;
-    const activityIds: string[] = createLeadForm.get('activityIds')?.value;
-    const companySize: {} = {
-      total: createLeadForm.get('total')?.value,
-      dev: createLeadForm.get('dev')?.value,
-      fe: createLeadForm.get('fe')?.value,
+    const annualRevenue: number = parseInt(
+      createLeadForm.get('annualRevenue')?.value
+    );
+    const activityIds: string[] = createLeadForm
+      .get('activityIds')
+      ?.getRawValue();
+
+    const companySize: CompanySizeModel = {
+      total: createLeadForm.get('companySize.total')?.value,
+      dev: createLeadForm.get('companySize.dev')?.value,
+      fe: createLeadForm.get('companySize.fe')?.value,
     };
-    const hiring: {} = {
-      active: createLeadForm.get('active')?.value,
-      junior: createLeadForm.get('junior')?.value,
-      talentProgram: createLeadForm.get('talentProgram')?.value,
+    const hiring: HiringModel = {
+      active: createLeadForm.get('hiring.active')?.value,
+      junior: createLeadForm.get('hiring.junior')?.value,
+      talentProgram: createLeadForm.get('hiring.talentProgram')?.value,
     };
-    const lead = {
+    const lead: CreateLeadModel = {
       name,
       websiteLink,
+      linkedinLink,
       location,
       industry,
       annualRevenue,
@@ -91,17 +125,16 @@ export class CreateLeadComponent {
       hiring,
     };
 
-    console.log(lead);
-    //   this._leadsService.createLead(lead).subscribe({
-    //     next: () => {
-    //       this._router.navigate(['/leads']);
-    //     },
-    //     error: (error: HttpErrorResponse) => {
-    //       this.createLeadForm.setErrors({
-    //         beValidators: error.error.message,
-    //       });
-    //       this.cd.markForCheck();
-    //     },
-    //   });
+    this._leadsService.createLead(lead).subscribe({
+      next: () => {
+        this._router.navigate(['/leads']);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.createLeadForm.setErrors({
+          beValidators: error.error.message ?? 'Something went wrong..',
+        });
+        this.cd.markForCheck();
+      },
+    });
   }
 }

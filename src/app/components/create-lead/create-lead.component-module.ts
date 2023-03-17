@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { NavbarComponentModule } from '../navbar/navbar.component-module';
+import { FooterComponentModule } from '../footer/footer.component-module';
 import { CreateLeadComponent } from './create-lead.component';
 import { CommonModule } from '@angular/common';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { NavbarComponentModule } from '../navbar/navbar.component-module';
-import { FooterComponentModule } from '../footer/footer.component-module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -14,6 +14,7 @@ import { FooterComponentModule } from '../footer/footer.component-module';
     ReactiveFormsModule,
     CommonModule,
     MatSnackBarModule,
+    RouterModule,
   ],
   declarations: [CreateLeadComponent],
   providers: [],
