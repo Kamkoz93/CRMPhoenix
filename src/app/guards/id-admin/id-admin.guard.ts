@@ -8,7 +8,7 @@ import {
 } from '@angular/router';
 import { Observable, take, map } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 @Injectable()
 export class IsAdmin implements CanActivate {
   constructor(private _authService: AuthService, private _router: Router) {}
@@ -21,7 +21,9 @@ export class IsAdmin implements CanActivate {
       take(1),
       map((isAdmin) => {
         return !isAdmin
-          ? this._router.parseUrl(route.data['redirectNotAdminUrl'] || '/leads')
+          ? this._router.parseUrl(
+              route.data['redirectNotAdminUrl'] || ROUTES_DEF.LEADS
+            )
           : true;
       })
     );

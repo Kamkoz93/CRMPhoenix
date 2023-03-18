@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 import { combineLatest, map, Observable, take } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -26,7 +27,8 @@ export class AuthGuard implements CanActivate {
       map(([isLogged, isVerfied]) => {
         return !isLogged && !isVerfied
           ? this._router.parseUrl(
-              route.data['redirectNotLoggedInUrl'] || '/auth/login'
+              route.data['redirectNotLoggedInUrl'] ||
+                `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`
             )
           : true;
       })

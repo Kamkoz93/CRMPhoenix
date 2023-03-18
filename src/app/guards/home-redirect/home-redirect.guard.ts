@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 
 @Injectable({ providedIn: 'root' })
 export class HomeRedirectGuard implements CanActivate {
@@ -11,6 +12,6 @@ export class HomeRedirectGuard implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this._router.parseUrl('/auth/login');
+    return this._router.parseUrl(`${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`);
   }
 }

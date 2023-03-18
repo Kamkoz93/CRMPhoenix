@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 
 @Component({
   selector: 'app-logged-out',
@@ -7,4 +8,5 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoggedOutComponent {
+  public readonly urlRoutes = ROUTES_DEF;
 }

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar.component';
 
 @NgModule({
-  imports: [],
+  imports: [RouterModule],
   declarations: [NavbarComponent],
   providers: [],
-  exports: [NavbarComponent]
+  exports: [NavbarComponent],
 })
-export class NavbarComponentModule {
-}
+export class NavbarComponentModule {}

@@ -8,7 +8,7 @@
                 <div class="col-auto">
                     <div class="d-md-flex justify-content-between">
                         <div *hasRole="'admin'">
-                            <button routerLink="/create-lead" class="btn btn-primary me-4"><span
+                            <button [routerLink]="'/'+[urlRoutes.CREATE_LEAD]" class="btn btn-primary me-4"><span
                                     class="fas fa-plus me-2"></span>Create
                                 Lead</button>
                         </div>
@@ -177,7 +177,5 @@
             </div>
         </div>
     </div>
-
-
 
     <app-footer></app-footer>

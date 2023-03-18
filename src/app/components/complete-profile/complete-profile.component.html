@@ -17,7 +17,7 @@
 
                                 <div
                                     class="position-relative px-4 pt-7 pb-7 pb-sm-5 pb-lg-7 text-center text-md-start px-md-7">
-                                    <div class="false"><a href="../index.html">
+                                    <div class="false"><a [routerLink]="[urlRoutes.BASE_URL]">
                                             <div
                                                 class="d-flex align-items-center justify-content-center justify-content-md-start">
                                                 <img src="../assets/img/icons/logo.png" alt="phoenix" width="48" />
@@ -46,16 +46,16 @@
                                         <textarea formControlName="content" class="form-control mb-3"
                                             placeholder="Write bio here..." rows="8"></textarea>
 
-                                        <div class="form-check-label"
+                                        <div class="form-check-label text-warning"
                                             *ngIf=" addBioForm.touched && addBioForm.get('content')!.invalid">Your bio
                                             should have at least 10
                                             words and 2 sentences.</div>
-                                        <div class="form-check-label" *ngIf="addBioForm.hasError('beValidators')">
+                                        <div class="form-check-label text-warning"
+                                            *ngIf="addBioForm.hasError('beValidators')">
                                             {{
                                             addBioForm.getError("beValidators")
                                             }}</div>
-                                        <button [disabled]="!addBioForm.valid" class="btn btn-primary w-100"
-                                            href="../index.html">Send</button>
+                                        <button class="btn btn-primary w-100">Send</button>
                                     </form>
                                 </div>
                             </div>

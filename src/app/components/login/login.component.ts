@@ -9,6 +9,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
+  public readonly urlRoutes = ROUTES_DEF;
   readonly loginForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
@@ -32,7 +34,9 @@ export class LoginComponent {
 
   onLoginFormSubmitted(loginForm: FormGroup): void {
     if (!this.loginForm.valid) {
-      this._snackBar.open('Form is invalid', 'Close');
+      this._snackBar.open('Check Your credentials', 'Close', {
+        duration: 2500,
+      });
       return;
     }
     const email: string = loginForm.get('email')?.value;
@@ -45,7 +49,9 @@ export class LoginComponent {
         this.loginForm.setErrors({
           beValidators: error.error.message,
         });
-        this._snackBar.open('Something went wrong', 'Close');
+        this._snackBar.open('Check Your credentials', 'Close', {
+          duration: 2500,
+        });
         this.cd.markForCheck();
       },
     });

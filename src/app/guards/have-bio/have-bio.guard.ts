@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { Observable, map, take } from 'rxjs';
 import { UserService } from 'src/app/services/user.service';
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 
 @Injectable({ providedIn: 'root' })
 export class HaveBioGuard implements CanActivate {
@@ -22,7 +23,8 @@ export class HaveBioGuard implements CanActivate {
       map((haveBio) => {
         if (!haveBio) {
           return this._router.parseUrl(
-            route.data['redirectCompleteProfileUrl'] || '/complete-profile'
+            route.data['redirectCompleteProfileUrl'] ||
+              ROUTES_DEF.COMPLETE_PROFILE
           );
         }
         return true;

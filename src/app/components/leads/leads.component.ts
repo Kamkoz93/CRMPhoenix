@@ -1,10 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  QueryList,
-  ViewChild,
-  ViewChildren,
   ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
@@ -15,6 +11,7 @@ import { LeadConvertedQueryModel } from '../../queries/lead-converted.query-mode
 import { LeadModel } from '../../models/lead.model';
 import { ActivityModel } from '../../models/activity.model';
 import { FilterFormModel } from 'src/app/models/filter-form.model';
+import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 
 @Component({
   selector: 'app-leads',
@@ -23,6 +20,7 @@ import { FilterFormModel } from 'src/app/models/filter-form.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeadsComponent {
+  public readonly urlRoutes = ROUTES_DEF;
   constructor(private _leadsService: LeadsService) {}
 
   readonly activitiesList$: Observable<ActivityModel[]> = this._leadsService

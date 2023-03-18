@@ -22,76 +22,85 @@ import { EmailVerifiedGuard } from './guards/email-verified/email-verified.guard
 import { HaveBioGuard } from './guards/have-bio/have-bio.guard';
 import { IsAdmin } from './guards/id-admin/id-admin.guard';
 import { LoggedIn } from './guards/logged-in/logged-in.guard';
-
+import { ROUTES_DEF } from './configuration/routes-definition';
 @NgModule({
   imports: [
     RouterModule.forRoot([
       {
-        path: '',
+        path: ROUTES_DEF.BASE_URL,
         component: HomeComponent,
       },
       {
-        path: 'auth',
-        canActivate: [],
+        path: ROUTES_DEF.AUTH,
+        redirectTo: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
+        pathMatch: 'full',
+      },
+      {
+        path: ROUTES_DEF.AUTH,
         children: [
           {
-            path: 'login',
+            path: ROUTES_DEF.LOGIN,
             component: LoginComponent,
             canActivate: [LoggedIn],
             data: {
-              redirectUrl: '/leads',
+              redirectUrl: ROUTES_DEF.LEADS,
             },
           },
           {
-            path: 'register',
+            path: ROUTES_DEF.REGISTER,
             component: RegisterComponent,
             canActivate: [LoggedIn],
             data: {
-              redirectUrl: '/leads',
+              redirectUrl: ROUTES_DEF.LEADS,
             },
           },
         ],
       },
       {
-        path: 'verify',
+        path: ROUTES_DEF.VERIFY,
         component: VerifyComponent,
-        canActivate: [AuthGuard, AlwaysFalseGuard],
+        canActivate: [AuthGuard, AlwaysFalseGuard, LoggedIn],
         data: {
-          redirectNotLoggedInUrl: '/auth/login',
+          redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
+          redirectUrl: ROUTES_DEF.LEADS,
         },
       },
       {
-        path: 'complete-profile',
+        path: ROUTES_DEF.COMPLETE_PROFILE,
         component: CompleteProfileComponent,
         canActivate: [AuthGuard],
         data: {
-          redirectNotLoggedInUrl: '/auth/login',
+          redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
         },
       },
       {
-        path: 'leads',
+        path: ROUTES_DEF.LEADS,
         component: LeadsComponent,
         canActivate: [AuthGuard, EmailVerifiedGuard, HaveBioGuard],
         data: {
-          redirectNotLoggedInUrl: '/auth/login',
-          redirectNotVerifiedUrl: '/verify',
-          redirectCompleteProfileUrl: '/complete-profile',
+          redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
+          redirectNotVerifiedUrl: ROUTES_DEF.VERIFY,
+          redirectCompleteProfileUrl: ROUTES_DEF.COMPLETE_PROFILE,
         },
       },
       {
-        path: 'create-lead',
+        path: ROUTES_DEF.CREATE_LEAD,
         component: CreateLeadComponent,
         canActivate: [AuthGuard, IsAdmin],
         data: {
-          redirectNotLoggedInUrl: '/auth/login',
-          redirectUrl: 'logged-in',
-          redirectNotAdmin: '/leads',
+          redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
+          redirectUrl: ROUTES_DEF.LOGGED_IN,
+          redirectNotAdmin: ROUTES_DEF.LEADS,
         },
       },
 
       {
-        path: 'logged-out',
+        path: ROUTES_DEF.LOGGED_OUT,
         component: LoggedOutComponent,
+        canActivate: [LoggedIn],
+        data: {
+          redirectUrl: ROUTES_DEF.LEADS,
+        },
       },
     ]),
     HomeComponentModule,

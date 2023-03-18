@@ -7,6 +7,7 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable, map, take } from 'rxjs';
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -22,7 +23,7 @@ export class EmailVerifiedGuard implements CanActivate {
       map((isVer) => {
         if (isVer === false) {
           return this._router.parseUrl(
-            route.data['redirectNotVerifiedUrl'] || '/verify'
+            route.data['redirectNotVerifiedUrl'] || ROUTES_DEF.VERIFY
           );
         }
         return true;

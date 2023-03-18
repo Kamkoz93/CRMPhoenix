@@ -16,6 +16,7 @@ import {
   CreateLeadModel,
   HiringModel,
 } from 'src/app/models/create-lead.model';
+import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 
 @Component({
   selector: 'app-create-lead',
@@ -30,6 +31,8 @@ export class CreateLeadComponent {
     private cd: ChangeDetectorRef,
     private _snackBar: MatSnackBar
   ) {}
+
+  public readonly urlRoutes = ROUTES_DEF;
 
   readonly createLeadForm: FormGroup = new FormGroup({
     name: new FormControl('', [Validators.required]),
@@ -85,7 +88,7 @@ export class CreateLeadComponent {
         'Something went wrong, please check your form',
         'Close',
         {
-          duration: 3000,
+          duration: 2500,
         }
       );
       return;
@@ -127,7 +130,7 @@ export class CreateLeadComponent {
 
     this._leadsService.createLead(lead).subscribe({
       next: () => {
-        this._router.navigate(['/leads']);
+        this._router.navigate([ROUTES_DEF.LEADS]);
       },
       error: (error: HttpErrorResponse) => {
         this.createLeadForm.setErrors({

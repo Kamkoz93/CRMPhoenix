@@ -7,7 +7,7 @@ import {
   UrlTree,
 } from '@angular/router';
 import { combineLatest, map, Observable, take } from 'rxjs';
-
+import { ROUTES_DEF } from '../../configuration/routes-definition';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class LoggedIn implements CanActivate {
       take(1),
       map(([isLogged, isVerfied]) => {
         return isLogged && isVerfied
-          ? this._router.parseUrl(route.data['redirectUrl'] || '/leads')
+          ? this._router.parseUrl(route.data['redirectUrl'] || ROUTES_DEF.LEADS)
           : true;
       })
     );

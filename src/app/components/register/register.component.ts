@@ -14,6 +14,7 @@ import { passwordMatchValidator } from 'src/app/custom-validators/password-match
 import { HttpErrorResponse } from '@angular/common/http';
 import { termsConditionsValidator } from 'src/app/custom-validators/terms-condition.validator';
 import { switchMap } from 'rxjs';
+import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,7 @@ import { switchMap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
+  public readonly urlRoutes = ROUTES_DEF;
   constructor(
     private _userService: UserService,
     private _authService: AuthService,
@@ -47,7 +49,14 @@ export class RegisterComponent {
 
   onRegisterFormSubmitted(registerForm: FormGroup) {
     if (this.registerForm.invalid) {
-      this._snackBar.open('Form is invalid', 'Close');
+      this.registerForm.markAllAsTouched();
+      this._snackBar.open(
+        'Something went wrong, please check your form',
+        'Close',
+        {
+          duration: 2500,
+        }
+      );
       return;
     }
     const email: string = registerForm.get('email')?.value;
@@ -61,13 +70,15 @@ export class RegisterComponent {
       )
       .subscribe({
         next: () => {
-          this._router.navigate(['/leads']);
+          this._router.navigate([ROUTES_DEF.LEADS]);
         },
         error: (error: HttpErrorResponse) => {
           this.registerForm.setErrors({
             beValidators: error.error.message,
           });
-          this._snackBar.open('Something went wrong', 'Close');
+          this._snackBar.open('Something went wrong', 'Close', {
+            duration: 2500,
+          });
           this.cd.markForCheck();
         },
       });
