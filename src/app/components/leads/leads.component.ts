@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
@@ -26,34 +27,6 @@ export class LeadsComponent {
   readonly activitiesList$: Observable<ActivityModel[]> = this._leadsService
     .getActivities()
     .pipe(shareReplay(1));
-
-  setScopeArr(data: any) {
-    const scopeFormArray = <FormArray>this.filterForm.controls['projectTypes'];
-
-    if (data.checked) {
-      scopeFormArray.push(new FormControl(data.value));
-    } else {
-      const index = scopeFormArray.controls.findIndex(
-        (x) => x.value == data.value
-      );
-      scopeFormArray.removeAt(index);
-    }
-  }
-
-  setCompanySizesArr(data: any) {
-    const companySizesArray = <FormArray>(
-      this.filterForm.controls['companySizes']
-    );
-
-    if (data.checked) {
-      companySizesArray.push(new FormControl(data.value));
-    } else {
-      const index = companySizesArray.controls.findIndex(
-        (x) => x.value == data.value
-      );
-      companySizesArray.removeAt(index);
-    }
-  }
 
   readonly filterForm: FormGroup = new FormGroup({
     isHiring: new FormControl(true),
@@ -82,8 +55,8 @@ export class LeadsComponent {
     this.selectedFormValues$,
   ]).pipe(
     map(([leads, activities, filterForm]) => {
-      const mappedLeads = this.mapLeads(leads, activities);
-      return this.filterLeads(mappedLeads, filterForm);
+      const mappedLeads = this._leadsService.mapLeads(leads, activities);
+      return this._leadsService.filterLeads(mappedLeads, filterForm);
     })
   );
 
@@ -95,82 +68,30 @@ export class LeadsComponent {
     '1001+',
   ]);
 
-  private filterLeads(
-    leads: LeadConvertedQueryModel[],
-    filter: FilterFormModel
-  ) {
-    const filterByHiring = (lead: LeadConvertedQueryModel) => {
-      if (!filter.isHiring) {
-        return true;
-      }
-      return filter.isHiring === lead.hiring.isHiring;
-    };
-
-    const filterByScope = (lead: LeadConvertedQueryModel) => {
-      if (
-        !filter.projectTypes ||
-        filter.projectTypes === null ||
-        filter.projectTypes.length === 0
-      ) {
-        return true;
-      }
-      return filter.projectTypes.every((activity) =>
-        lead.scope.includes(activity)
+  private setArray(data: any, valuesArray: FormArray) {
+    if (data.checked) {
+      valuesArray.push(new FormControl(data.value));
+    } else {
+      const index = valuesArray.controls.findIndex(
+        (x) => x.value == data.value
       );
-    };
+      valuesArray.removeAt(index);
+    }
+  }
 
-    const filterByCompanySize = (lead: LeadConvertedQueryModel) => {
-      if (
-        !filter.companySizes ||
-        filter.companySizes === null ||
-        filter.companySizes.length === 0
-      ) {
-        return true;
-      }
-      return filter.companySizes.some((sizeRange: string) => {
-        const [minSize, maxSize] = sizeRange
-          ?.split('-')
-          ?.map((size) => parseInt(size, 10));
-        const companySize = lead.companySize.total;
-        return (
-          companySize >= minSize && (maxSize ? companySize <= maxSize : true)
-        );
-      });
-    };
-    return leads.filter(
-      (lead) =>
-        filterByHiring(lead) && filterByScope(lead) && filterByCompanySize(lead)
+  public setScopeArr(data: any) {
+    const activitiesArr = <FormArray>this.filterForm.controls['projectTypes'];
+    return this.setArray(data, activitiesArr);
+  }
+
+  public setCompanySizesArr(data: any) {
+    const companySizesArray = <FormArray>(
+      this.filterForm.controls['companySizes']
     );
+    return this.setArray(data, companySizesArray);
   }
 
-  private mapLeads(leads: LeadModel[], activities: ActivityModel[]) {
-    const activitiesMap = activities.reduce((a, c) => {
-      return { ...a, [c.id]: c };
-    }, {}) as Record<string, ActivityModel>;
-    return leads.map((lead) => {
-      return {
-        name: lead.name,
-        scope: lead.activityIds.map((act) => activitiesMap[act]?.name) ?? [],
-        hiring: {
-          isHiring: lead.hiring.active === '' ? false : true,
-          juniors: lead.hiring.junior === '' ? false : true,
-          talentProgram: lead.hiring.talentProgram === '' ? false : true,
-        },
-        industry: lead.industry,
-        location: lead.location,
-        linkedInUrl: lead.linkedinLink,
-        websiteUrl: lead.websiteLink,
-        companySize: {
-          fe: lead.companySize.fe,
-          dev: lead.companySize.dev,
-          total: lead.companySize.total,
-        },
-        revenue: lead.annualRevenue,
-      };
-    });
-  }
-
-  resetFilterForm(): void {
+  public resetFilterForm(): void {
     this.filterForm.patchValue({
       isHiring: true,
       projectTypes: [],
@@ -190,7 +111,7 @@ export class LeadsComponent {
     this.uncheckAllChecks();
   }
 
-  uncheckAllChecks() {
+  public uncheckAllChecks() {
     const checkboxes = document.querySelectorAll<HTMLInputElement>('#checkbox');
     checkboxes.forEach((checkbox: HTMLInputElement) => {
       checkbox.checked = false;

@@ -51,8 +51,12 @@
                                             <label class="form-label" for="password">Password</label>
                                             <div class="form-icon-container">
                                                 <input formControlName="password" class="form-control form-icon-input"
-                                                    id="password" type="password" placeholder="Password" /><span
-                                                    class="fas fa-key text-900 fs--1 form-icon"></span>
+                                                    id="password" type="password" placeholder="Password"
+                                                    required /><span class="fas fa-key text-900 fs--1 form-icon"></span>
+                                                <div class="form-check-label text-warning" *ngIf="loginForm.get('password')?.errors?.['required'] && 
+                                                    (loginForm.get('password')?.touched)">
+                                                    Please provide password
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row flex-between-center mb-7">
@@ -72,7 +76,7 @@
                                             <div class="col-auto"><a class="fs--1 fw-semi-bold" href="/">Forgot
                                                     Password?</a></div>
                                         </div>
-                                        <button [disabled]="!loginForm.valid" class="btn btn-primary w-100 mb-3">Sign
+                                        <button class="btn btn-primary w-100 mb-3">Sign
                                             In</button>
                                         <div class="text-center"><a class="fs--1 fw-bold"
                                                 [routerLink]="['/', urlRoutes.AUTH, urlRoutes.REGISTER]">Create an

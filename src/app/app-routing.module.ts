@@ -59,18 +59,18 @@ import { ROUTES_DEF } from './configuration/routes-definition';
       {
         path: ROUTES_DEF.VERIFY,
         component: VerifyComponent,
-        canActivate: [AuthGuard, AlwaysFalseGuard, LoggedIn],
+        canActivate: [AuthGuard, AlwaysFalseGuard],
         data: {
           redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
-          redirectUrl: ROUTES_DEF.LEADS,
         },
       },
       {
         path: ROUTES_DEF.COMPLETE_PROFILE,
         component: CompleteProfileComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, EmailVerifiedGuard],
         data: {
           redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
+          redirectNotVerifiedUrl: ROUTES_DEF.VERIFY,
         },
       },
       {
@@ -89,7 +89,6 @@ import { ROUTES_DEF } from './configuration/routes-definition';
         canActivate: [AuthGuard, IsAdmin],
         data: {
           redirectNotLoggedInUrl: `${ROUTES_DEF.AUTH}/${ROUTES_DEF.LOGIN}`,
-          redirectUrl: ROUTES_DEF.LOGGED_IN,
           redirectNotAdmin: ROUTES_DEF.LEADS,
         },
       },
@@ -97,10 +96,6 @@ import { ROUTES_DEF } from './configuration/routes-definition';
       {
         path: ROUTES_DEF.LOGGED_OUT,
         component: LoggedOutComponent,
-        canActivate: [LoggedIn],
-        data: {
-          redirectUrl: ROUTES_DEF.LEADS,
-        },
       },
     ]),
     HomeComponentModule,

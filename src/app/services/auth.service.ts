@@ -1,13 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  Observable,
-  map,
-  tap,
-  BehaviorSubject,
-  shareReplay,
-  catchError,
-  of,
-} from 'rxjs';
+import { Observable, map, tap, BehaviorSubject, catchError, of } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { UserCredentialsModel } from '../models/user-credentials.model';
 import { DataResponseModel } from '../models/data-response.model';
@@ -22,12 +14,9 @@ export class AuthService {
     private _httpClient: HttpClient,
     @Inject(STORAGE) private _storage: Storage
   ) {}
-  initialUserVerification: Observable<boolean> = this.isUserVerified().pipe(
-    shareReplay(1)
-  );
-  initialEmailVerification: Observable<boolean> = this.isEmailVerified().pipe(
-    shareReplay(1)
-  );
+  initialUserVerification: Observable<boolean> = this.isUserVerified();
+
+  initialEmailVerification: Observable<boolean> = this.isEmailVerified();
 
   private _loggedInSubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(this.isUserLogged());
