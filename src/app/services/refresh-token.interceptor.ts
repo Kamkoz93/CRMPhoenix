@@ -23,9 +23,12 @@ export class RefreshTokenInterceptor implements HttpInterceptor {
         const refreshToken = this._storage.getItem('refreshToken');
 
         if (
-          err.status === 403 &&
-          err.error.message === 'Token is invalid' &&
-          refreshToken
+          (err.status === 403 &&
+            err.error.message === 'Token is invalid' &&
+            refreshToken) ||
+          (err.status === 401 &&
+            err.error.message === 'Authentication required' &&
+            refreshToken)
         ) {
           return this._authService.refreshToken(refreshToken).pipe(
             switchMap((data) => {
