@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, map, Observable, of, shareReplay } from 'rxjs';
+import { catchError, Observable, of, shareReplay } from 'rxjs';
 import { UserCredentialsModel } from '../models/user-credentials.model';
 import { DataResponseModel } from '../models/data-response.model';
 import { BioContentModel } from '../models/bio-content.model';
