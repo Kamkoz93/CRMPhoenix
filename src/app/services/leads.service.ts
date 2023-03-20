@@ -41,50 +41,58 @@ export class LeadsService {
     leads: LeadConvertedQueryModel[],
     filter: FilterFormModel
   ) {
+    const filteredScopeArr = filter.projectTypeBoxes;
+    const companySizeArr = filter.companySizeBoxes;
+    const isHiring = filter.isHiring.checked;
+
     const filterByHiring = (lead: LeadConvertedQueryModel) => {
-      if (!filter.isHiring) {
+      if (!isHiring) {
         return true;
       }
-      return filter.isHiring === lead.hiring.isHiring;
+      return isHiring === lead.hiring.isHiring;
     };
 
     const filterByScope = (lead: LeadConvertedQueryModel) => {
       if (
-        !filter.projectTypes ||
-        filter.projectTypes === null ||
-        filter.projectTypes.length === 0
+        !filteredScopeArr ||
+        filteredScopeArr === null ||
+        filteredScopeArr.length === 0
       ) {
         return true;
       }
-      return filter.projectTypes.every((activity) =>
-        lead.scope.includes(activity)
-      );
+      return filteredScopeArr
+        .filter((scope) => scope.checked)
+        .every((checkedScope) => lead.scope.includes(checkedScope.name));
     };
 
     const filterByCompanySize = (lead: LeadConvertedQueryModel) => {
       if (
-        !filter.companySizes ||
-        filter.companySizes === null ||
-        filter.companySizes.length === 0
+        !companySizeArr ||
+        companySizeArr === null ||
+        companySizeArr.length === 0
       ) {
         return true;
       }
-      return filter.companySizes.some((sizeRange: string) => {
-        const [minSize, maxSize] = sizeRange
+      const checkedRanges = companySizeArr.filter((range) => range.checked);
+      if (checkedRanges.length === 0) {
+        return true;
+      }
+      const companySize = lead.companySize.total;
+      return checkedRanges.some((range) => {
+        const [minSize, maxSize] = range.name
           ?.split('-')
           ?.map((size) => parseInt(size, 10));
-        const companySize = lead.companySize.total;
         return (
           companySize >= minSize && (maxSize ? companySize <= maxSize : true)
         );
       });
     };
+
     return leads.filter(
       (lead) =>
         filterByHiring(lead) && filterByScope(lead) && filterByCompanySize(lead)
     );
   }
-
   public mapLeads(leads: LeadModel[], activities: ActivityModel[]) {
     const activitiesMap = activities.reduce((a, c) => {
       return { ...a, [c.id]: c };
@@ -94,9 +102,9 @@ export class LeadsService {
         name: lead.name,
         scope: lead.activityIds.map((act) => activitiesMap[act]?.name) ?? [],
         hiring: {
-          isHiring: lead.hiring.active === '' ? false : true,
-          juniors: lead.hiring.junior === '' ? false : true,
-          talentProgram: lead.hiring.talentProgram === '' ? false : true,
+          isHiring: lead.hiring.active,
+          juniors: lead.hiring.junior,
+          talentProgram: lead.hiring.talentProgram,
         },
         industry: lead.industry,
         location: lead.location,

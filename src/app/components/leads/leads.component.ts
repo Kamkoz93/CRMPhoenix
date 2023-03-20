@@ -9,10 +9,10 @@ import { Observable, combineLatest, of } from 'rxjs';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 import { LeadsService } from '../../services/leads.service';
 import { LeadConvertedQueryModel } from '../../queries/lead-converted.query-model';
-import { LeadModel } from '../../models/lead.model';
 import { ActivityModel } from '../../models/activity.model';
 import { FilterFormModel } from 'src/app/models/filter-form.model';
 import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
+import { CheckBoxModel } from 'src/app/models/check-box.model';
 
 @Component({
   selector: 'app-leads',
@@ -20,7 +20,7 @@ import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LeadsComponent {
+export class LeadsComponent implements OnInit {
   public readonly urlRoutes = ROUTES_DEF;
   constructor(private _leadsService: LeadsService) {}
 
@@ -28,26 +28,101 @@ export class LeadsComponent {
     .getActivities()
     .pipe(shareReplay(1));
 
-  readonly filterForm: FormGroup = new FormGroup({
-    isHiring: new FormControl(true),
-    projectTypes: new FormArray([]),
-    companySizes: new FormArray([]),
+  readonly activitiesCheckboxes$: Observable<CheckBoxModel[]> =
+    this.activitiesList$.pipe(
+      map((activities) =>
+        activities.map((act) => ({ name: act.name, checked: false }))
+      )
+    );
+
+  readonly companySizeOptions$: Observable<CheckBoxModel[]> = of([
+    { name: '0-50', checked: false },
+    { name: '51-100', checked: false },
+    { name: '101-500', checked: false },
+    { name: '501-1000', checked: false },
+    { name: '1001+', checked: false },
+  ]);
+
+  readonly form_model: FormGroup = new FormGroup({
+    isHiring: new FormGroup({
+      name: new FormControl('isHiring'),
+      checked: new FormControl(true),
+    }),
+    projectTypeBoxes: new FormArray([
+      new FormGroup({
+        name: new FormControl('Internal Projects'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('External Projects'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('Recruitment Agency'),
+        checked: new FormControl(false),
+      }),
+    ]),
+    companySizeBoxes: new FormArray([
+      new FormGroup({
+        name: new FormControl('0-50'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('51-100'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('101-500'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('501-1000'),
+        checked: new FormControl(false),
+      }),
+      new FormGroup({
+        name: new FormControl('1001+'),
+        checked: new FormControl(false),
+      }),
+    ]),
   });
 
   readonly selectedFormValues$: Observable<FilterFormModel> =
-    this.filterForm.valueChanges.pipe(
-      startWith({
-        isHiring: true,
-        projectTypes: new FormArray([]),
-        companySizes: new FormArray([]),
-      }),
-      map((form: FilterFormModel) => ({
-        isHiring: form.isHiring,
-        projectTypes: form.projectTypes,
-        companySizes: form.companySizes,
+    this.form_model.valueChanges.pipe(
+      startWith(this.filterFromStorage),
+      map((formValue: FilterFormModel) => ({
+        isHiring: {
+          name: formValue.isHiring.name,
+          checked: formValue.isHiring.checked,
+        },
+        projectTypeBoxes: formValue.projectTypeBoxes.map(
+          (box: CheckBoxModel) => ({
+            name: box.name,
+            checked: box.checked,
+          })
+        ),
+        companySizeBoxes: formValue.companySizeBoxes.map(
+          (box: CheckBoxModel) => ({
+            name: box.name,
+            checked: box.checked,
+          })
+        ),
       })),
       shareReplay(1)
     );
+
+  onSubmit() {
+    localStorage.setItem('filter', JSON.stringify(this.form_model.value));
+    const filter = JSON.parse(localStorage.getItem('filter') ?? 'false');
+  }
+
+  get filterFromStorage() {
+    const filter = JSON.parse(localStorage.getItem('filter') ?? 'false');
+    const defaultFilter = this.form_model.value;
+    if (filter != false) {
+      return filter;
+    }
+    return defaultFilter;
+  }
 
   public mappedLeads$: Observable<LeadConvertedQueryModel[]> = combineLatest([
     this._leadsService.getLeads(),
@@ -60,61 +135,31 @@ export class LeadsComponent {
     })
   );
 
-  readonly companySizeOptions$: Observable<string[]> = of([
-    '0-50',
-    '51-100',
-    '101-500',
-    '501-1000',
-    '1001+',
-  ]);
+  resetForm() {
+    this.form_model.reset({
+      isHiring: {
+        name: 'isHiring',
+        checked: true,
+      },
+      projectTypeBoxes: this.form_model
+        .get('projectTypeBoxes')
+        ?.value.map((box: CheckBoxModel) => ({
+          name: box.name,
+          checked: false,
+        })),
+      companySizeBoxes: this.form_model
+        .get('companySizeBoxes')
+        ?.value.map((box: CheckBoxModel) => ({
+          name: box.name,
+          checked: false,
+        })),
+    });
+  }
 
-  private setArray(data: any, valuesArray: FormArray) {
-    if (data.checked) {
-      valuesArray.push(new FormControl(data.value));
-    } else {
-      const index = valuesArray.controls.findIndex(
-        (x) => x.value == data.value
-      );
-      valuesArray.removeAt(index);
+  ngOnInit() {
+    if (this.filterFromStorage != false) {
+      return this.form_model.setValue(this.filterFromStorage);
     }
-  }
-
-  public setScopeArr(data: any) {
-    const activitiesArr = <FormArray>this.filterForm.controls['projectTypes'];
-    return this.setArray(data, activitiesArr);
-  }
-
-  public setCompanySizesArr(data: any) {
-    const companySizesArray = <FormArray>(
-      this.filterForm.controls['companySizes']
-    );
-    return this.setArray(data, companySizesArray);
-  }
-
-  public resetFilterForm(): void {
-    this.filterForm.patchValue({
-      isHiring: true,
-      projectTypes: [],
-      companySizes: [],
-    });
-
-    const projectTypesFormArray = this.filterForm.get(
-      'projectTypes'
-    ) as FormArray;
-    projectTypesFormArray.clear();
-
-    const companySizesFormArray = this.filterForm.get(
-      'companySizes'
-    ) as FormArray;
-    companySizesFormArray.clear();
-
-    this.uncheckAllChecks();
-  }
-
-  public uncheckAllChecks() {
-    const checkboxes = document.querySelectorAll<HTMLInputElement>('#checkbox');
-    checkboxes.forEach((checkbox: HTMLInputElement) => {
-      checkbox.checked = false;
-    });
+    return;
   }
 }

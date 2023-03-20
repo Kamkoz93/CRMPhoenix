@@ -23,6 +23,7 @@ import { HaveBioGuard } from './guards/have-bio/have-bio.guard';
 import { IsAdmin } from './guards/id-admin/id-admin.guard';
 import { LoggedIn } from './guards/logged-in/logged-in.guard';
 import { ROUTES_DEF } from './configuration/routes-definition';
+
 @NgModule({
   imports: [
     RouterModule.forRoot([
