@@ -11,7 +11,7 @@ export interface AuthUserDataModel {
         iat: number;
         exp: number;
         email: string;
-        email_verified: false;
+        email_verified: boolean;
         firebase: {
           identities: { email: string[] };
           sign_in_provider: string;

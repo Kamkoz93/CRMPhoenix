@@ -1,5 +1,14 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable, map, tap, BehaviorSubject, catchError, of } from 'rxjs';
+import {
+  Observable,
+  map,
+  tap,
+  BehaviorSubject,
+  catchError,
+  of,
+  share,
+  shareReplay,
+} from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { UserCredentialsModel } from '../models/user-credentials.model';
 import { DataResponseModel } from '../models/data-response.model';
@@ -14,9 +23,12 @@ export class AuthService {
     private _httpClient: HttpClient,
     @Inject(STORAGE) private _storage: Storage
   ) {}
-  initialUserVerification: Observable<boolean> = this.isUserVerified();
+  initialUserVerification: Observable<boolean> = this.isUserVerified().pipe(
+    map((data) => data),
+    shareReplay(1)
+  );
 
-  initialEmailVerification: Observable<boolean> = this.isEmailVerified();
+  // initialEmailVerification: Observable<boolean> = this.isEmailVerified();
 
   private _loggedInSubject: BehaviorSubject<boolean> =
     new BehaviorSubject<boolean>(this.isUserLogged());
@@ -44,7 +56,9 @@ export class AuthService {
 
   public isUserVerified(): Observable<boolean> {
     return this._httpClient
-      .get<any>('https://us-central1-courses-auth.cloudfunctions.net/auth/me')
+      .get<boolean>(
+        'https://us-central1-courses-auth.cloudfunctions.net/auth/me'
+      )
       .pipe(
         catchError((error: HttpErrorResponse) => {
           if (error) {
@@ -52,7 +66,8 @@ export class AuthService {
           } else {
             return of(true);
           }
-        })
+        }),
+        shareReplay(1)
       );
   }
 
@@ -63,9 +78,10 @@ export class AuthService {
       )
       .pipe(
         map((res) => {
-          const emailVerified = res.data.user.context.email_verified ?? false;
+          const emailVerified = res.data.user.context.email_verified;
           return emailVerified;
-        })
+        }),
+        shareReplay(1)
       );
   }
 

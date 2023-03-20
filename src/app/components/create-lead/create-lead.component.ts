@@ -5,7 +5,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { Router } from '@angular/router';
 import { ActivityModel } from '../../models/activity.model';
 import { LeadsService } from '../../services/leads.service';
@@ -64,7 +64,10 @@ export class CreateLeadComponent {
 
   readonly activitiesList$: Observable<ActivityModel[]> = this._leadsService
     .getActivities()
-    .pipe(shareReplay(1));
+    .pipe(
+      map((data) => data),
+      shareReplay(1)
+    );
 
   public setAcitiviesArr(data: any) {
     const activitiesIdsArr = this.createLeadForm.get(
