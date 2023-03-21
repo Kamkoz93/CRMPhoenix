@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  Inject,
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
@@ -13,6 +14,7 @@ import { ActivityModel } from '../../models/activity.model';
 import { FilterFormModel } from 'src/app/models/filter-form.model';
 import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
 import { CheckBoxModel } from 'src/app/models/check-box.model';
+import { STORAGE } from 'src/app/services/storage';
 
 @Component({
   selector: 'app-leads',
@@ -22,7 +24,10 @@ import { CheckBoxModel } from 'src/app/models/check-box.model';
 })
 export class LeadsComponent implements OnInit {
   public readonly urlRoutes = ROUTES_DEF;
-  constructor(private _leadsService: LeadsService) {}
+  constructor(
+    private _leadsService: LeadsService,
+    @Inject(STORAGE) private _storage: Storage
+  ) {}
 
   readonly activitiesList$: Observable<ActivityModel[]> = this._leadsService
     .getActivities()
@@ -110,18 +115,28 @@ export class LeadsComponent implements OnInit {
       shareReplay(1)
     );
 
-  onSubmit() {
-    localStorage.setItem('filter', JSON.stringify(this.form_model.value));
-    const filter = JSON.parse(localStorage.getItem('filter') ?? 'false');
+  public saveFilterToStorage() {
+    this._storage.setItem('filter', JSON.stringify(this.form_model.value));
   }
 
   get filterFromStorage() {
-    const filter = JSON.parse(localStorage.getItem('filter') ?? 'false');
-    const defaultFilter = this.form_model.value;
-    if (filter != false) {
-      return filter;
+    const storedFilter = this._storage.getItem('filter');
+
+    if (storedFilter?.startsWith('{')) {
+      JSON.parse(storedFilter);
     }
-    return defaultFilter;
+    const defaultFilter = this.form_model.value;
+
+    const filterKeys = Object.keys(storedFilter ?? {}).sort();
+    const defaultFilterKeys = Object.keys(defaultFilter ?? {}).sort();
+    const keysAreEqual =
+      JSON.stringify(filterKeys) === JSON.stringify(defaultFilterKeys);
+
+    if (keysAreEqual) {
+      return storedFilter;
+    } else {
+      return defaultFilter;
+    }
   }
 
   public mappedLeads$: Observable<LeadConvertedQueryModel[]> = combineLatest([
@@ -131,11 +146,12 @@ export class LeadsComponent implements OnInit {
   ]).pipe(
     map(([leads, activities, filterForm]) => {
       const mappedLeads = this._leadsService.mapLeads(leads, activities);
+      this.saveFilterToStorage();
       return this._leadsService.filterLeads(mappedLeads, filterForm);
     })
   );
 
-  resetForm() {
+  public resetForm() {
     this.form_model.reset({
       isHiring: {
         name: 'isHiring',
