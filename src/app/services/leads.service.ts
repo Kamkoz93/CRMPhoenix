@@ -7,6 +7,7 @@ import { ActivityModel } from '../models/activity.model';
 import { LeadModel } from '../models/lead.model';
 import { FilterFormModel } from '../models/filter-form.model';
 import { LeadConvertedQueryModel } from '../queries/lead-converted.query-model';
+import { API_ROUTES_DEF } from '../configuration/routes-definition';
 
 @Injectable({ providedIn: 'root' })
 export class LeadsService {
@@ -15,7 +16,8 @@ export class LeadsService {
   public getActivities(): Observable<ActivityModel[]> {
     return this._httpClient
       .get<DataResponseModel<ActivityModel[]>>(
-        'https://us-central1-courses-auth.cloudfunctions.net/leads/activities'
+        API_ROUTES_DEF.ACTIVITIES ??
+          'https://us-central1-courses-auth.cloudfunctions.net/leads/activities'
       )
       .pipe(map((data) => data.data));
   }
@@ -23,7 +25,8 @@ export class LeadsService {
   public getLeads(): Observable<LeadModel[]> {
     return this._httpClient
       .get<DataResponseModel<LeadModel[]>>(
-        'https://us-central1-courses-auth.cloudfunctions.net/leads'
+        API_ROUTES_DEF.LEADS ??
+          'https://us-central1-courses-auth.cloudfunctions.net/leads'
       )
       .pipe(map((data) => data.data));
   }
@@ -32,7 +35,8 @@ export class LeadsService {
     lead: CreateLeadModel
   ): Observable<DataResponseModel<CreateLeadModel>> {
     return this._httpClient.post<DataResponseModel<CreateLeadModel>>(
-      'https://us-central1-courses-auth.cloudfunctions.net/leads',
+      API_ROUTES_DEF.LEADS ??
+        'https://us-central1-courses-auth.cloudfunctions.net/leads',
       { data: lead }
     );
   }
