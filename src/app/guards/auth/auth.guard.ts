@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
   ): Observable<boolean | UrlTree> {
     return combineLatest([
       this._authService.loggedIn$,
-      this._authService.initialUserVerification,
+      this._authService.isUserVerified(),
     ]).pipe(
       take(1),
       map(([isLogged, isVerfied]) => {
