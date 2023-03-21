@@ -119,21 +119,24 @@ export class LeadsComponent implements OnInit {
     this._storage.setItem('filter', JSON.stringify(this.form_model.value));
   }
 
-  get filterFromStorage() {
-    const storedFilter = this._storage.getItem('filter');
+  public get filterFromStorage() {
+    const storedFilter = this._storage.getItem('filter') ?? 'null';
+    let parsedStoredFilter;
 
-    if (storedFilter?.startsWith('{')) {
-      JSON.parse(storedFilter);
+    try {
+      parsedStoredFilter = JSON.parse(storedFilter);
+    } catch {
+      parsedStoredFilter = undefined;
     }
-    const defaultFilter = this.form_model.value;
 
-    const filterKeys = Object.keys(storedFilter ?? {}).sort();
+    const defaultFilter = this.form_model.value;
+    const filterKeys = Object.keys(parsedStoredFilter ?? {}).sort();
     const defaultFilterKeys = Object.keys(defaultFilter ?? {}).sort();
     const keysAreEqual =
       JSON.stringify(filterKeys) === JSON.stringify(defaultFilterKeys);
 
     if (keysAreEqual) {
-      return storedFilter;
+      return parsedStoredFilter ?? defaultFilter;
     } else {
       return defaultFilter;
     }
@@ -145,13 +148,13 @@ export class LeadsComponent implements OnInit {
     this.selectedFormValues$,
   ]).pipe(
     map(([leads, activities, filterForm]) => {
-      const mappedLeads = this._leadsService.mapLeads(leads, activities);
       this.saveFilterToStorage();
+      const mappedLeads = this._leadsService.mapLeads(leads, activities);
       return this._leadsService.filterLeads(mappedLeads, filterForm);
     })
   );
 
-  public resetForm() {
+  resetForm() {
     this.form_model.reset({
       isHiring: {
         name: 'isHiring',
@@ -173,9 +176,6 @@ export class LeadsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.filterFromStorage != false) {
-      return this.form_model.setValue(this.filterFromStorage);
-    }
-    return;
+    return this.form_model.setValue(this.filterFromStorage);
   }
 }
