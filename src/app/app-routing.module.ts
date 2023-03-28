@@ -30,6 +30,10 @@ import { ROUTES_DEF } from './configuration/routes-definition';
       {
         path: ROUTES_DEF.BASE_URL,
         component: HomeComponent,
+        canActivate: [LoggedIn],
+        data: {
+          redirectUrl: ROUTES_DEF.LEADS,
+        },
       },
       {
         path: ROUTES_DEF.AUTH,

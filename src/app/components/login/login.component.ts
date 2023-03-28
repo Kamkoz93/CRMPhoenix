@@ -1,15 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ViewEncapsulation,
-} from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../services/auth.service';
 import { ROUTES_DEF } from 'src/app/configuration/routes-definition';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +25,7 @@ export class LoginComponent {
     private _router: Router,
     private cd: ChangeDetectorRef,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   onLoginFormSubmitted(loginForm: FormGroup): void {
     if (!this.loginForm.valid) {

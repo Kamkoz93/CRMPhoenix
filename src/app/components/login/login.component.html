@@ -43,8 +43,8 @@
                                             <label class="form-label" for="email">Email address</label>
                                             <div class="form-icon-container">
                                                 <input formControlName="email" class="form-control form-icon-input"
-                                                    id="email" type="email" placeholder="name@example.com" /><span
-                                                    class="fas fa-user text-900 fs--1 form-icon"></span>
+                                                    id="email" type="email" placeholder="name@example.com" />
+                                                <span class="icon-span fas fa-user text-900 fs--1 form-icon"></span>
                                             </div>
                                         </div>
                                         <div class="mb-3 text-start">
@@ -52,7 +52,8 @@
                                             <div class="form-icon-container">
                                                 <input formControlName="password" class="form-control form-icon-input"
                                                     id="password" type="password" placeholder="Password"
-                                                    required /><span class="fas fa-key text-900 fs--1 form-icon"></span>
+                                                    required /><span
+                                                    class="icon-span fas fa-key text-900 fs--1 form-icon"></span>
                                                 <div class="form-check-label text-warning" *ngIf="loginForm.get('password')?.errors?.['required'] && 
                                                     (loginForm.get('password')?.touched)">
                                                     Please provide password
@@ -83,7 +84,6 @@
                                                 account</a>
                                         </div>
                                     </form>
-
                                 </div>
                             </div>
                         </div>

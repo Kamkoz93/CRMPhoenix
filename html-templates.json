@@ -7,6 +7,7 @@
     },
     "layouts": {
         "add-button": "<button mat-mini-fab><mat-icon>add</mat-icon></button>",
+        "fui-login-button": "<button class=\"btn btn-primary w-100 mb-3\">Sign In</button>",
         "edit-button": "<button mat-mini-fab><mat-icon>edit</mat-icon></button>",
         "remove-button": "<button mat-mini-fab><mat-icon>remove</mat-icon></button>",
         "raised-button": "<button mat-raised-button>Click me</button>",
@@ -44,6 +45,11 @@
             "input": "<div><mat-form-field appearance=\"fill\"><mat-label>$label$</mat-label>$inputs.input-text$<mat-error *ngIf=\"$formVariable$.get('$formControlName$')!.invalid\">$formControlName$ is invalid</mat-error></mat-form-field></div>",
             "formSubmit": "",
             "form": "<fieldset formGroupName=\"$formVariable$\"><label>$formVariable$</label>$content$</fieldset>"
+        },
+        "fui-form": {
+            "input": "<div class=\"mb-3 text-start\">\n <label class=\"form-label\" for=\"$formControlName$\">$label$</label>\n <div class=\"form-icon-container\">\n $inputs.input-text$\n <span class=\"fas fa-$icon$ text-900 fs--1 form-icon\"></span>\n <div class=\"form-check-label text-warning\" *ngIf=\"$formVariable$.get('$formControlName$')?.errors?.['required'] && $formVariable$.get('$formControlName$')?.touched\">\n Please provide $formControlName$\n </div>\n </div>\n</div>",
+            "formSubmit": "<button type=\"submit\" class=\"btn btn-primary w-100 mb-3\">$label$</button>",
+            "form": "<form [formGroup]=\"$formVariable$\" (ngSubmit)=\"$submitCallback$\">$content$</form>"
         }
     },
     "lists": {
