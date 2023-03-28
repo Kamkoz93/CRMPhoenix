@@ -1,5 +1,5 @@
 # CRMPhoenix
-This project is a Bootstrap-based CRM with recruitment leads for people who are interested in finding new jobs in IT industry. Creating this project, I focused on leveraging my knowledge of authentication and authorization and general application flow paying extra attention to security aspects.
+This project is a Bootstrap-based CRM with recruitment leads for people who are interested in finding new jobs in IT industry. Creating this project, I focused on leveraging my knowledge of authentication and authorization and general application flow paying extra attention to security aspects. User is able to create normal account with e-mail verification functionality to browse leads or as if user is admin, then he could create new leads (for admin credentials please contact me at kamkoz93@gmail.com)
 
 ## Demo
 
